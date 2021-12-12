@@ -16,8 +16,8 @@ def on_connect(client, userdata, flags, rc):
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
-    print(msg.payload)
-    payload = json.loads(str(msg.payload))
+    print(str(msg.payload))
+    payload = json.loads(str(msg.payload.decode('UTF-8')))
     endpoint = 0
     if msg.topic == "zigbee2mqtt/ovladac_satna":
         endpoint = 2
@@ -27,11 +27,11 @@ def on_message(client, userdata, msg):
     if "action" in payload:
         if payload["action"] == "on":
             # switch ON
-            publish.single('zigbee2mqtt/2switch_pracovna/' + str(endpoint) + '/set', '{"state":"ON"}',
+            publish.single('zigbee2mqtt/spinac_pracovna/set', '{"state_right":"ON"}',
                            hostname="localhost")
         elif payload["action"] == "off":
             # switch off
-            publish.single('zigbee2mqtt/2switch_pracovna/' + str(endpoint) + '/set', '{"state":"OFF"}',
+            publish.single('zigbee2mqtt/spinac_pracovna/set', '{"state_right":"OFF"}',
                            hostname="localhost")
 
 
@@ -41,12 +41,14 @@ client.on_message = on_message
 
 client.connect("localhost", 1883, 60)
 # Add message callbacks that will only trigger on a specific subscription match.
-client.message_callback_add("zigbee2mqtt/ovladac_pracovna_2/", on_message)
+#client.message_callback_add("zigbee2mqtt/ovladac_pracovna_2/", on_message)
+#client.message_callback_add("zigbee2mqtt/ovladac_pracovna/", on_message)
 client.message_callback_add("zigbee2mqtt/ovladac_satna/", on_message)
 # client.message_callback_add("$SYS/broker/bytes/#", on_message_bytes)
 # client.on_message = on_message
 client.connect("localhost", 1883, 60)
-client.subscribe("zigbee2mqtt/ovladac_pracovna_2", 0)
+#client.subscribe("zigbee2mqtt/ovladac_pracovna_2", 0)
+#client.subscribe("zigbee2mqtt/ovladac_pracovna", 0)
 client.subscribe("zigbee2mqtt/ovladac_satna", 0)
 
 # Blocking call that processes network traffic, dispatches callbacks and
